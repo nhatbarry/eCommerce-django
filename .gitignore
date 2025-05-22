@@ -1,1 +1,4 @@
-/venv
+venv
+ecommerce/*/__pycache__
+ecommerce/*/migrations
+db.sqlite3
