@@ -1,4 +1,5 @@
 venv
-ecommerce/*/__pycache__
-ecommerce/*/migrations
 db.sqlite3
+*/*/__pycache__
+*/*/*/__pycache__
+../resources
