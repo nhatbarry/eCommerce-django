@@ -1,17 +1,30 @@
-import React from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { Row, Col, Image, ListGroup, Button, Card } from 'react-bootstrap'
-import { products } from '../products'
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Row, Col, Image, ListGroup, Button, Card } from "react-bootstrap";
+import axios from "axios";
 
+function ProductScreen() {
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
 
-function ProductScreen({match}) {
-    const { id } = useParams(); // 👈 lấy `id` từ URL
-    const product = products.find((p) => p._id === id);
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const { data } = await axios.get(`/api/prod/${id}/`);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    }
+
+    fetchProduct();
+  }, [id]);
+
   return (
     <div>
-      {product.name}
+      <h1>{product.name}</h1>
     </div>
-  )
+  );
 }
 
-export default ProductScreen
+export default ProductScreen;
