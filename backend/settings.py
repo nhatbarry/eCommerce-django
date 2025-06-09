@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from environ import Env
+import dj_database_url
 
 
 env = Env()
@@ -38,6 +39,8 @@ else:
     DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = ['https://ecommerce-django-production-7581.up.railway.app']
 
 
 # Application definition
@@ -138,6 +141,10 @@ DATABASES = {
     }
 }
 
+POSTGRES_LOCALLY = False
+
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == False:
+    DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 # Database
 # https://docs.djangoproject.com/en/5.0.6/ref/settings/#databases
 # DATABASES = {
