@@ -38,7 +38,7 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ecommerce-django-production-7581.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = ['https://ecommerce-django-production-7581.up.railway.app']
 
