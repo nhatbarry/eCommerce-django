@@ -7,3 +7,7 @@ admin.site.register(Review)
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(ShippingAddress)
+admin.site.register(Brand)
+admin.site.register(Category)
+
+
