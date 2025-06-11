@@ -44,8 +44,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField(read_only=True)
-    image = serializers.SerializerMethodField()
-    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -55,14 +53,6 @@ class ProductSerializer(serializers.ModelSerializer):
         reviews = obj.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         return serializer.data
-
-    def get_image(self, obj):
-        request = self.context.get('request', None)
-        if request and obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url)
-        elif obj.image and hasattr(obj.image, 'url'):
-            return obj.image.url
-        return None
 
 
 class ShippingAddressSerializer(serializers.ModelSerializer):

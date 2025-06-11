@@ -14,8 +14,12 @@ from base.serializers import (
 
 @api_view(['GET'])
 def getProducts(request):
-    query = request.query_params.get('keyword', '')
-    products = Product.objects.filter(name__icontains=query).order_by('-createdAt')
+    query = request.query_params.get('keyword')
+    if query == None:
+        query = ''
+
+    products = Product.objects.filter(
+        name__icontains=query).order_by('-createdAt')
 
     page = request.query_params.get('page')
     paginator = Paginator(products, 5)
@@ -27,10 +31,14 @@ def getProducts(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
 
-    page = int(page) if page else 1
+    if page == None:
+        page = 1
 
-    serializer = ProductSerializer(products, many=True, context={'request': request})
+    page = int(page)
+    print('Page:', page)
+    serializer = ProductSerializer(products, many=True)
     return Response({'products': serializer.data, 'page': page, 'pages': paginator.num_pages})
+
 
 
 @api_view(['GET'])
