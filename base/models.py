@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
 
@@ -7,16 +9,19 @@ from django.contrib.auth.models import User
 class Brand(models.Model):
     _id = models.AutoField(primary_key=True, editable=False)
     brand = models.CharField(max_length=50, null=True, blank=True)
+    def __str__(self):
+        return self.brand
 
 class Category(models.Model):
     _id = models.AutoField(primary_key=True, editable=False)
     category = models.CharField(max_length=50, null=True, blank=True)
+    def __str__(self):
+        return self.category
 
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-    image = models.ImageField(null=True, blank=True,
-                              default='/placeholder.png')
+    image = models.ImageField(upload_to='products/', null=True, blank=True, default='/placeholder.png')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
@@ -30,8 +35,33 @@ class Product(models.Model):
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
     _id = models.AutoField(primary_key=True, editable=False)
 
+    ram = models.IntegerField(null=True, blank=True)
+    screen_size = models.DecimalField(decimal_places=1, null=True, validators=[MinValueValidator(13.0), MaxValueValidator(40)], max_digits=3)
+    processor = models.CharField(max_length=100, null=True, blank=True)
+    gpu_brand = models.CharField(max_length=100, null=True, blank=True)
+    DRIVE_SIZE_CHOICES = [
+        (16, '16 GB'),
+        (32, '32 GB'),
+        (64, '64 GB'),
+        (128, '128 GB'),
+        (256, '256 GB'),
+        (512, '512 GB'),
+        (1024, '1 TB'),
+    ]
+
+    drive_size = models.IntegerField(choices=DRIVE_SIZE_CHOICES, null=True, blank=True)
+
     def __str__(self):
         return self.name
+    
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='products/')
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
 
 
 class Review(models.Model):

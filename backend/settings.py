@@ -60,6 +60,15 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
 ]
 
+DEFAULT_FILE_STORAGE = 'base.storage_backends.AzureMediaStorage'
+
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
+AZURE_CONTAINER = env('AZURE_CONTAINER')
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/'
+AZURE_SSL = True
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -140,8 +149,7 @@ DATABASES = {
 }
 
 
-if ENVIRONMENT == 'production':
-    DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
+DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 # Database
 # https://docs.djangoproject.com/en/5.0.6/ref/settings/#databases
 # DATABASES = {
@@ -193,11 +201,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0.6/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/images/'
-
-
-MEDIA_ROOT = BASE_DIR / 'static/images'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 
