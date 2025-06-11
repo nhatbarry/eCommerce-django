@@ -42,22 +42,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ProductImage
-        fields = ['id', 'image']
-
-    def get_image(self, obj):
-        request = self.context.get('request')
-        if request and obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url)
-        elif obj.image and hasattr(obj.image, 'url'):
-            return obj.image.url
-        return None
-
-
 class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField(read_only=True)
     image = serializers.SerializerMethodField()
