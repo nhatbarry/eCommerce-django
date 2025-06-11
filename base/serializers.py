@@ -64,11 +64,6 @@ class ProductSerializer(serializers.ModelSerializer):
             return obj.image.url
         return None
 
-    def get_images(self, obj):
-        images = obj.images.all()
-        serializer = ProductImageSerializer(images, many=True, context=self.context)
-        return serializer.data
-
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
