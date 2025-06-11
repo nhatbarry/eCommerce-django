@@ -20,5 +20,6 @@ gunicorn==21.2.0
 psycopg2-binary
 django-environ
 dj-database-url
-django-storages
+django-storages[azure]
 azure-storage-blob
+
