@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -36,7 +35,7 @@ class Product(models.Model):
     _id = models.AutoField(primary_key=True, editable=False)
 
     ram = models.IntegerField(null=True, blank=True)
-    screen_size = models.DecimalField(decimal_places=1, null=True, validators=[MinValueValidator(13.0), MaxValueValidator(40)], max_digits=3)
+    screen_size = models.DecimalField(decimal_places=1, null=True, max_digits=3)
     processor = models.CharField(max_length=100, null=True, blank=True)
     gpu_brand = models.CharField(max_length=100, null=True, blank=True)
     DRIVE_SIZE_CHOICES = [
@@ -92,6 +91,7 @@ class Order(models.Model):
     deliveredAt = models.DateTimeField(
         auto_now_add=False, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):

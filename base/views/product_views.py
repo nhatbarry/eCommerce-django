@@ -167,3 +167,10 @@ def getCategories(request):
 
     serializer = CategorySerializer(categories, many=True)
     return Response({'categories': serializer.data})
+
+
+@api_view(['GET'])
+def getDiscountProducts(request):
+    products = Product.objects.filter(discount__gt= 0)
+    serializer = ProductSerializer(products, many=True)
+    return Response({'products': serializer.data})
