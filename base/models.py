@@ -88,6 +88,17 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.createdAt)
+    
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    _id = models.AutoField(primary_key=True, editable=False)
+
+    def __str__(self):
+        if self.user:
+            return f"{self.user.username}'s cart"
+        return "No user cart"
+
 
 
 class OrderItem(models.Model):
