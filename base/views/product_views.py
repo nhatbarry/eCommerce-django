@@ -182,3 +182,11 @@ def getDiscountProducts(request):
     products = Product.objects.filter(discount__gt= 0)
     serializer = ProductSerializer(products, many=True)
     return Response({'products': serializer.data})
+
+
+@api_view(['GET'])
+def getProductsByCategory(request, cat):
+    category = Category.objects.get(category=cat)
+    products = Product.objects.filter(category=category)
+    serializer = ProductSerializer(products, many=True)
+    return Response({'products': serializer.data})
