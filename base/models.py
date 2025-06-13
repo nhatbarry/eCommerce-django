@@ -91,7 +91,7 @@ class Order(models.Model):
     
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, related_name='cart')
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
@@ -103,7 +103,8 @@ class Cart(models.Model):
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     qty = models.IntegerField(null=True, blank=True, default=0)
     price = models.DecimalField(
