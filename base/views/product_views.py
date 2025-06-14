@@ -18,26 +18,12 @@ def getProducts(request):
     if query == None:
         query = ''
 
+    #ram  request.query_params.get
+
     products = Product.objects.filter(
         name__icontains=query).order_by('-createdAt')
-
-    page = request.query_params.get('page')
-    paginator = Paginator(products, 5)
-
-    try:
-        products = paginator.page(page)
-    except PageNotAnInteger:
-        products = paginator.page(1)
-    except EmptyPage:
-        products = paginator.page(paginator.num_pages)
-
-    if page == None:
-        page = 1
-
-    page = int(page)
-    print('Page:', page)
     serializer = ProductSerializer(products, many=True)
-    return Response({'products': serializer.data, 'page': page, 'pages': paginator.num_pages})
+    return Response({'products': serializer.data})
 
 
 
