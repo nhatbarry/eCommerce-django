@@ -34,6 +34,25 @@ def addToCart(request, pk):
 
     return Response({'detail': 'Product added to cart'}, status=status.HTTP_201_CREATED)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def removeFromCart(request, pk):
+    user = request.user
+
+    try:
+        product = Product.objects.get(_id=pk)
+    except Product.DoesNotExist:
+        return Response({'detail': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        item = OrderItem.objects.get(product=product, cart=user.cart)
+        item.delete()
+        return Response({'detail': 'Product removed from cart'}, status=status.HTTP_200_OK)
+    except OrderItem.DoesNotExist:
+        return Response({'detail': 'Product not in cart'}, status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def makeOrder(request):
