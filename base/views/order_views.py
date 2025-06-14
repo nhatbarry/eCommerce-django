@@ -28,6 +28,7 @@ def addToCart(request, pk):
         cart=user.cart,
         name=product.name,
         qty=data.get('qty', 1),
+        price=product.price,
         image=product.image.url,
     )
 
