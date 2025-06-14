@@ -35,7 +35,7 @@ def addToCart(request, pk):
     return Response({'detail': 'Product added to cart'}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def removeFromCart(request, pk):
     user = request.user
