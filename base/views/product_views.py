@@ -14,16 +14,45 @@ from base.serializers import (
 
 @api_view(['GET'])
 def getProducts(request):
-    query = request.query_params.get('keyword')
-    if query == None:
-        query = ''
+    query = request.query_params.get('keyword', '')
 
-    #ram  request.query_params.get
+    brand_list = request.query_params.getlist('brand')
+    ram_list = request.query_params.getlist('ram')
+    processor_list = request.query_params.getlist('processor')
+    gpu_brand_list = request.query_params.getlist('gpu_brand')
+    drive_size_list = request.query_params.getlist('drive_size')
 
-    products = Product.objects.filter(
-        name__icontains=query).order_by('-createdAt')
+    screen_size_min = request.query_params.get('screen_size_min')
+    screen_size_max = request.query_params.get('screen_size_max')
+
+    products = Product.objects.filter(name__icontains=query)
+
+    if brand_list:
+        products = products.filter(brand__name__in=brand_list)
+
+    if ram_list:
+        products = products.filter(ram__in=ram_list)
+
+    if processor_list:
+        products = products.filter(processor__in=processor_list)
+
+    if gpu_brand_list:
+        products = products.filter(gpu_brand__in=gpu_brand_list)
+
+    if drive_size_list:
+        products = products.filter(drive_size__in=drive_size_list)
+
+    if screen_size_min:
+        products = products.filter(screen_size__gte=screen_size_min)
+    if screen_size_max:
+        products = products.filter(screen_size__lte=screen_size_max)
+
+    products = products.order_by('-createdAt')
+
     serializer = ProductSerializer(products, many=True)
     return Response({'products': serializer.data})
+
+
 
 
 
