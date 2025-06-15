@@ -30,6 +30,7 @@ def addToCart(request, pk):
         qty=data.get('qty', 1),
         price=product.price,
         image=product.image.url,
+        discount=product.discount
     )
 
     return Response({'detail': 'Product added to cart'}, status=status.HTTP_201_CREATED)
@@ -75,7 +76,6 @@ def makeOrder(request):
             totalPrice=data['totalPrice']
         )
 
-        # (2) Create shipping address
 
         shipping = ShippingAddress.objects.create(
             order=order,
@@ -85,7 +85,6 @@ def makeOrder(request):
             country=data['shippingAddress']['country'],
         )
 
-        # (3) Create order items adn set order to orderItem relationship
         for i in orderItems:
             product = i.product
 
@@ -96,6 +95,7 @@ def makeOrder(request):
                 qty=i.qty,
                 price=i.price,
                 image=product.image.url,
+                discount=product.discount
             )
 
             product.countInStock -= item.qty
@@ -173,3 +173,43 @@ def updateOrderToDelivered(request, pk):
     order.save()
 
     return Response('Order was delivered')
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def buyNow(request, pk):
+    user = request.user
+    data = request.data
+    product = Product.objects.get(_id=pk)
+
+    order = Order.objects.create(
+        user=user,
+        paymentMethod=data['paymentMethod'],
+        taxPrice=data['taxPrice'],
+        shippingPrice=data['shippingPrice'],
+        totalPrice=data['totalPrice']
+    )
+
+
+    shipping = ShippingAddress.objects.create(
+        order=order,
+        address=data['shippingAddress']['address'],
+        city=data['shippingAddress']['city'],
+        postalCode=data['shippingAddress']['postalCode'],
+        country=data['shippingAddress']['country'],
+    )
+
+    item = OrderItem.objects.create(
+            product=product,
+            order=order,
+            name=product.name,
+            qty=data['qty'],
+            price=product.price,
+            image=product.image.url,
+            discount=product.discount
+        )
+
+    product.countInStock -= item.qty
+    product.save()
+    serializer = OrderSerializer(order, many=False)
+    return Response(serializer.data)
