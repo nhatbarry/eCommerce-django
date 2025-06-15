@@ -73,7 +73,8 @@ def makeOrder(request):
             paymentMethod=data['paymentMethod'],
             taxPrice=data['taxPrice'],
             shippingPrice=data['shippingPrice'],
-            totalPrice=data['totalPrice']
+            totalPrice=data['totalPrice'],
+            receiver=data['receiver'] or user.name
         )
 
 
@@ -100,7 +101,9 @@ def makeOrder(request):
 
             product.countInStock -= item.qty
             product.save()
-        orderItems.delete()
+            i.cart=None
+            i.save()
+        
 
 
         serializer = OrderSerializer(order, many=False)
@@ -187,9 +190,9 @@ def buyNow(request, pk):
         paymentMethod=data['paymentMethod'],
         taxPrice=data['taxPrice'],
         shippingPrice=data['shippingPrice'],
-        totalPrice=data['totalPrice']
+        totalPrice=data['totalPrice'],
+        receiver=data['receiver'] or user.name
     )
-
 
     shipping = ShippingAddress.objects.create(
         order=order,
