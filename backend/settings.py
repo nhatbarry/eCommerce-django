@@ -31,8 +31,8 @@ ENCRYPT_KEY = env('ENCRYPT_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENVIRONMENT == 'development'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ecommerce-django-production-7581.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['https://ecommerce-django-production-7581.up.railway.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ecommerce-django-production-6256.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://ecommerce-django-production-6256.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
