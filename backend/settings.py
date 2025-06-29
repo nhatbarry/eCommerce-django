@@ -16,7 +16,6 @@ from pathlib import Path
 from environ import Env
 import dj_database_url
 
-
 env = Env()
 
 env.read_env()
@@ -25,26 +24,17 @@ ENVIRONMENT = env('ENVIRONMENT', default='production')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0.6/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 ENCRYPT_KEY = env('ENCRYPT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if ENVIRONMENT == 'development':
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = ENVIRONMENT == 'development'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ecommerce-django-production-7581.up.railway.app']
-
 CSRF_TRUSTED_ORIGINS = ['https://ecommerce-django-production-7581.up.railway.app']
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,29 +50,20 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
 ]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-            "account_name": env("AZURE_ACCOUNT_NAME"),
-            "account_key": env("AZURE_ACCOUNT_KEY"),
-            "azure_container": env("AZURE_CONTAINER"),
-            "azure_ssl": True,
-            "expiration_secs": None,
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
+# Use Cloudflare R2 for media files
+DEFAULT_FILE_STORAGE = 'backend.storage_backend.CloudflareR2PublicStorage'
 
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+R2_ACCOUNT_ID = env('R2_ACCOUNT_ID')
+AWS_S3_ENDPOINT_URL = f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+AWS_S3_ADDRESSING_STYLE = "virtual"
+AWS_QUERYSTRING_AUTH = False
+MEDIA_URL = f"https://pub-4a404b4050c34e9fae705d05aa87820a.r2.dev/"
 
-AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
-AZURE_CONTAINER = env('AZURE_CONTAINER')
-AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
-AZURE_SSL = True
-
+# Static files (local)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -90,29 +71,23 @@ REST_FRAMEWORK = {
     )
 }
 
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
-
     'ALGORITHM': 'HS256',
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,
-
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
-
     'JTI_CLAIM': 'jti',
-
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
@@ -121,7 +96,6 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -151,24 +125,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.0.6/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(env('DATABASE_URL'))
 }
 
-
-DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
-
-
 # Password validation
-# https://docs.djangoproject.com/en/5.0.6/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -184,42 +146,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.0.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0.6/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
-
-
 CORS_ALLOW_ALL_ORIGINS = True
-
-
-# Dont forget to reset database connection and hide password
-#AWS_QUERYSTRING_AUTH = False
-#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-#AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-#AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-
-#AWS_STORAGE_BUCKET_NAME = 'proshop-bucket-demo'
-
 
 if os.getcwd() == '/app':
     DEBUG = False
