@@ -23,9 +23,15 @@ def addToCart(request, pk):
     except Product.DoesNotExist:
         return Response({'detail': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    item = OrderItem.objects.create(
+    cart = user.cart
+
+    existing_item = OrderItem.objects.filter(cart=cart, product=product).first()
+    if existing_item:
+        return Response({'detail': 'Product already in cart'}, status=status.HTTP_409_CONFLICT)
+
+    OrderItem.objects.create(
         product=product,
-        cart=user.cart,
+        cart=cart,
         name=product.name,
         qty=data.get('qty', 1),
         price=product.price,
